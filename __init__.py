@@ -5,24 +5,23 @@ from aqt import editor
 from aqt.utils import showInfo
 from anki.hooks import addHook, wrap
 
-import requests
+# import requests
+from .engines.glosbe import AutocompleteGlosbe
+from .prepare import Plugin
+
 
 
 noAutocompleteFields = []
 
 
 class Engine(object):
-    def query(self, text):
+    def query(self, text, **kwargs):
         pass
 
 
 class AnkiEngine(object):
-    def query(self, text):
+    def query(self, text, **kwargs):
         pass
-
-
-class GlosbeEngine(object):
-    pass
 
 
 def setNote(self, note, hide=True, focusTo=None):
@@ -85,13 +84,15 @@ def onBridgeCmd(self, cmd, _old=None):
             return
 
 
-        glosbe_url = 'https://glosbe.com/ajax/phrasesAutosuggest?from=pl&dest=ru&phrase=%s' % text
-        r = requests.get(glosbe_url)
-        if not r.status_code == 200:
-            showInfo('Request failed: %s' % r.status_code)
-            return
+        # glosbe_url = 'https://glosbe.com/ajax/phrasesAutosuggest?from=pl&dest=ru&phrase=%s' % text
+        # r = requests.get(glosbe_url)
+        # if not r.status_code == 200:
+        #     showInfo('Request failed: %s' % r.status_code)
+        #     return
 
-        entries = r.json()
+        # entries = r.json()
+        entries = AutocompleteGlosbe.query(text)
+
         # suggestions_str = '<br>'.join(suggestions)
 
         html_container = '''
@@ -116,7 +117,9 @@ def onBridgeCmd(self, cmd, _old=None):
 
 def main():
     # from . import prepare
-    cardCount = mw.col.cardCount()
+    # cardCount = mw.col.cardCount()
+    # wquery.config.read()
+    Plugin.setup()
     # showInfo("Card count: %d" % cardCount)
 
 # action = QAction("test", mw)
